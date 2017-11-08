@@ -1,0 +1,16 @@
+
+#ignore python compiled files
+*.pyc
+*.pyo
+
+
+
+#ignore specific results
+build/
+dist/
+project/build/
+project/dist/
+ 
+
+#ignore pyscritpter project files
+*.psproj
