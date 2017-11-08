@@ -20,24 +20,30 @@ def _octreeWriteData(bstream, node):
 
     for i in range(4):
         child = node.getNodeChild(i)
-        if child.isLeaf():
-            if child.isOccupied():
-                child1to4[2*i] = False; child1to4[(2*i)+1] = True
-            else:
-                child1to4[2*i] = True;  child1to4[(2*i)+1] = False
+        if child is None:
+            child1to4[2*i] = False; child1to4[(2*i)+1] = False
         else:
-            child1to4[2*i] = True; child1to4[(2*i)+1] = True
+            if child.isLeaf():
+                if child.isOccupied():
+                    child1to4[2*i] = False; child1to4[(2*i)+1] = True
+                else:
+                    child1to4[2*i] = True;  child1to4[(2*i)+1] = False
+            else:
+                child1to4[2*i] = True; child1to4[(2*i)+1] = True
 
 
     for i in range(4):
         child = node.getNodeChild(i+4)
-        if child.isLeaf():
-            if child.isOccupied():
-                child5to8[2*i] = False; child5to8[(2*i)+1] = True
-            else:
-                child5to8[2*i] = True;  child5to8[(2*i)+1] = False
+        if child is None:
+            child5to8[2*i] = False; child5to8[(2*i)+1] = False
         else:
-            child5to8[2*i] = True; child5to8[(2*i)+1] = True
+            if child is not None and child.isLeaf():
+                if child.isOccupied():
+                    child5to8[2*i] = False; child5to8[(2*i)+1] = True
+                else:
+                    child5to8[2*i] = True;  child5to8[(2*i)+1] = False
+            else:
+                child5to8[2*i] = True; child5to8[(2*i)+1] = True
 
     child1to4_char = _fromBitSetToChar(child1to4)
     child5to8_char = _fromBitSetToChar(child5to8)
@@ -53,44 +59,11 @@ def _octreeWriteData(bstream, node):
                 _octreeWriteData(bstream, child)
 
 
-##        child1to4 = _fromCharToBitSet(child1to4_char)
-##        child5to8 = _fromCharToBitSet(child5to8_char)
-
-##        if (child1to4[2*i] is True) and (child1to4[(2*i)+1] is False):
-##            # child is free leaf
-##            node.createNodeChild(i).setValid(False)
-##        elif (child1to4[2*i] is False) and (child1to4[(2*i)+1] is True):
-##            # child is occupied leaf
-##            node.createNodeChild(i).setValid(True)
-##        elif (child1to4[2*i] is True) and (child1to4[(2*i)+1] is True):
-##            node.createNodeChild(i).setValid(None) #child is unkown, we leave it uninitialized
-##
-##    for i in range(4):
-##        if (child5to8[2*i] is True) and (child5to8[(2*i)+1] is False):
-##            # child is free leaf
-##            node.createNodeChild(i+4).setValid(False)
-##        elif (child5to8[2*i] is False) and (child5to8[(2*i)+1] is True):
-##            # child is occupied leaf
-##            node.createNodeChild(i+4).setValid(True)
-##        elif (child5to8[2*i] is True) and (child5to8[(2*i)+1] is True):
-##            node.createNodeChild(i+4).setValid(None) #child is unkown, we leave it uninitialized
-##
-##
-##    for i in range(8):
-##        if node.nodeChildExists(i):
-##            child = node.getNodeChild(i)
-##            if child.getValid() is None:
-##                _octreeReadBinaryNode(bstream, child)
-##                child.setValid(True)
-
-
-
 
 def _octreeWriteHeader(F, tree, res):
     treeId = "OcTree"
     size = tree.getNumberOfNodes()
     header="""# Octomap OcTree binary file
-# Octomap OcTree binary file
 # (feel free to add / change comments, but leave the first line as it is!)
 #
 id {0}
@@ -106,8 +79,6 @@ def OctreeWrite(fileName, tree, resolution=1.0):
     with open(fileName, "wb") as F:
         _octreeWriteHeader(F, tree, resolution)
         _octreeWriteData(F, tree)
-
-
 
 
 
