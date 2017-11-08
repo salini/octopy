@@ -14,6 +14,7 @@ class OSGVisualization():
 
     def showTestFile(self, show=False):
         filename = common.getFromTestDir("../resources/test.bt")
+        #filename = common.getFromTestDir("../resources/out.bt")
         header, octree = octopy.OctreeReader.OctreeRead(filename, CoordNode)
         octree.setNodeSizeRecursively()
         octree.setCoordinateRecursively()

@@ -45,6 +45,12 @@ class TNode(object):
                 nodes.extend(c.getAllNodes())
         return nodes
 
+    def getNumberOfNodes(self):
+        val = 1
+        val += sum([c.getNumberOfNodes() for c in self.children if c is not None])
+        return val
+
+
 
 import numpy as np
 
