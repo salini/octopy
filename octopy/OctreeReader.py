@@ -95,8 +95,31 @@ def OctreeRead(fileName, NodeType=None):
 
 
 
+import time
+
 if __name__ == "__main__":
-    filename = "../resources/test.bt"
+    filename = "../resources/out.bt"
+    t = time.time()
     header, octree = OctreeRead(filename)
-    print header
-    print "end"
+    t = time.time() - t
+    print filename, t
+
+    filename = "../resources/test.bt"
+    t = time.time()
+    header, octree = OctreeRead(filename)
+    t = time.time() - t
+    print filename, t
+
+    filename = "../resources/freiburg1_360.bt"
+    t = time.time()
+    header, octree = OctreeRead(filename)
+    t = time.time() - t
+    print filename, t
+
+    filename = "../resources/fr_078_tidyup.bt"
+    t = time.time()
+    header, octree = OctreeRead(filename)
+    t = time.time() - t
+    print filename, t
+
+

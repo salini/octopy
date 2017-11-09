@@ -86,10 +86,29 @@ def OctreeRead2(fileName):
 
 
 
+import time
+
 if __name__ == "__main__":
-    from Parser import Serialize
     filename = "../resources/out.bt"
+    t = time.time()
     header, octree = OctreeRead2(filename)
-    print octree
-    print header
-    print "end"
+    t = time.time() - t
+    print filename, t
+
+    filename = "../resources/test.bt"
+    t = time.time()
+    header, octree = OctreeRead2(filename)
+    t = time.time() - t
+    print filename, t
+
+    filename = "../resources/freiburg1_360.bt"
+    t = time.time()
+    header, octree = OctreeRead2(filename)
+    t = time.time() - t
+    print filename, t
+
+    filename = "../resources/fr_078_tidyup.bt"
+    t = time.time()
+    header, octree = OctreeRead2(filename)
+    t = time.time() - t
+    print filename, t

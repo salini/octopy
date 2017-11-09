@@ -1,0 +1,29 @@
+# WINDOWS 64 python 32
+
+PS D:\joe\dev\octopy\octopy> python .\OctreeReader.py
+../resources/out.bt 0.0
+../resources/test.bt 1.382999897
+../resources/freiburg1_360.bt 8.49799990654
+../resources/fr_078_tidyup.bt 6.52399992943
+
+PS D:\joe\dev\octopy\octopy> python .\OctreeReader2.py
+../resources/out.bt 0.0
+../resources/test.bt 0.384000062943
+../resources/freiburg1_360.bt 2.60599994659
+../resources/fr_078_tidyup.bt 1.97300004959
+
+
+# UBUNTU 14.04 VIRTUALBOX
+
+joe@joe-VirtualBox:~/dev/octopy/octopy$ python OctreeReader.py
+../resources/out.bt 8.60691070557e-05
+../resources/test.bt 1.38817596436
+../resources/freiburg1_360.bt 8.89215016365
+../resources/fr_078_tidyup.bt 6.5707321167
+
+joe@joe-VirtualBox:~/dev/octopy/octopy$ python OctreeReader2.py 
+../resources/out.bt 0.000107049942017
+../resources/test.bt 0.288685083389
+../resources/freiburg1_360.bt 1.92925095558
+../resources/fr_078_tidyup.bt 1.45893502235
+
