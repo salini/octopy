@@ -1,4 +1,4 @@
-# WINDOWS 64 python 32
+# WINDOWS 64bit python 32
 
 PS D:\joe\dev\octopy\octopy> python .\OctreeReader.py
 ../resources/out.bt 0.0
@@ -13,7 +13,7 @@ PS D:\joe\dev\octopy\octopy> python .\OctreeReader2.py
 ../resources/fr_078_tidyup.bt 1.97300004959
 
 
-# UBUNTU 14.04 VIRTUALBOX
+# UBUNTU 14.04 32bit VIRTUALBOX (SSD HDD)
 
 joe@joe-VirtualBox:~/dev/octopy/octopy$ python OctreeReader.py
 ../resources/out.bt 8.60691070557e-05
@@ -26,4 +26,21 @@ joe@joe-VirtualBox:~/dev/octopy/octopy$ python OctreeReader2.py
 ../resources/test.bt 0.288685083389
 ../resources/freiburg1_360.bt 1.92925095558
 ../resources/fr_078_tidyup.bt 1.45893502235
+
+
+#UBUNTU 16.04 64bits
+
+joe@joe-G751JT:~/dev/octopy/octopy$ python OctreeReader.py 
+../resources/out.bt 8.29696655273e-05
+../resources/test.bt 1.32196807861
+../resources/freiburg1_360.bt 8.58336496353
+../resources/fr_078_tidyup.bt 6.29278707504
+
+joe@joe-G751JT:~/dev/octopy/octopy$ python OctreeReader2.py 
+../resources/out.bt 5.29289245605e-05
+../resources/test.bt 0.294785022736
+../resources/freiburg1_360.bt 2.0281059742
+../resources/fr_078_tidyup.bt 1.54609584808
+
+
 
