@@ -85,7 +85,7 @@ def OctreeWrite(fileName, tree, resolution=1.0):
 
 
 if __name__ == "__main__":
-    treeRep = [True, [True, True, True, True, False, False, True, False], True, True, False, False, True, False]
+    treeRep = [True, [True, True, True, True, False, False, True, False], True, True, False, False, True, None]
 
     tree = TNode()
     Parse(treeRep, tree)
