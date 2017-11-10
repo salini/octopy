@@ -8,6 +8,6 @@ sys.path.append(cpath+"/..")
 import octopy
 
 
-def getFromTestDir(p):
-    return os.path.join(cpath, p)
+def getFromTestDir(path):
+    return os.path.join(cpath, path)
 

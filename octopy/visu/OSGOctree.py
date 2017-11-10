@@ -5,16 +5,17 @@ from osgswig import osg
 
 import numpy as np
 
-def createOSGOctree(octree):
-    print "start creating OSG octree"
+
+
+
+def createOSGCubes(cubes):
+    print "start creating OSG cubes"
     root = osg.Group()
-    nodes = octree.getAllNodes()
-    for n in nodes:
-            if n.isLeaf():
-                if n.isOccupied():
-                    pos = n.getCoordinate()
-                    dim = np.ones(3)* n.getNodeSize()
-                    root.addChild(getBox(pos, dim))
+    for c in cubes:
+        pos = (c[0], c[1], c[2])
+        dim = (c[3], c[3], c[3])
+        root.addChild(getBox(pos, dim))
     print "done"
 
     return root
+
