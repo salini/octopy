@@ -24,7 +24,38 @@ def createOSGCubes(cubes):
 def createOSGQuads(quads):
     print "start creating OSG quads"
     root = osg.Group()
+    geode = osg.Geode()
+    geometry = osg.Geometry()
+    vertices = osg.Vec3Array()
+    normals = osg.Vec3Array()
+
+    root.addChild(geode)
+    geode.addDrawable(geometry)
+    geometry.setVertexArray(vertices)
+    geometry.setNormalArray(normals)
+    geometry.setNormalBinding(osg.Geometry.BIND_PER_PRIMITIVE_SET)
+
+    idx = 0
     for q in quads:
-        pos = q[0]
-        normal = q[1]
-        l = q [2]
+        for v in q:
+            vertices.push_back(osg.Vec3(*v))
+        primitive = osg.DrawElementsUInt(osg.PrimitiveSet.QUADS, 0)
+        #primitive = osg.DrawElementsUInt(osg.PrimitiveSet.TRIANGLE_FAN, 0)
+        primitive.push_back(idx+0)
+        primitive.push_back(idx+1)
+        primitive.push_back(idx+2)
+        primitive.push_back(idx+3)
+
+        v0 = q[1] - q[0]
+        v1 = q[-1] - q[0]
+        n = np.cross(v0, v1)
+        n /= np.linalg.norm(n)
+        normals.push_back(osg.Vec3(*n))
+
+        geometry.addPrimitiveSet(primitive)
+
+        idx +=4
+
+    print "done"
+
+    return root

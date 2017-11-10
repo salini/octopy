@@ -2,9 +2,9 @@
 import common  # to load path to octopy package
 
 from octopy.OctreeParser import OctreeParser
-from octopy.Ocnode import getFree, getOccupied, getUnknown, nodesToCubes
+from octopy.Ocnode import getFree, getOccupied, getUnknown, nodesToCubes, nodesToQuads
 from octopy.visu.core import show
-from octopy.visu.OSGOctree import createOSGCubes
+from octopy.visu.OSGOctree import createOSGCubes, createOSGQuads
 from octopy.visu.effects import setWireframe, setMaterialColor, createOSGGroup
 
 
@@ -43,7 +43,16 @@ def draw_colored_cubes():
 
     show(root)
 
-if __name__ == "__main__":
-    draw_wireframe()
-    draw_colored_cubes()
 
+def draw_with_quads():
+    o=getOccupied(octree.root)
+    q = nodesToQuads(o, octree.getResolutionTable())
+    root = createOSGQuads(q)
+    setMaterialColor(root, (1,0,0,1))
+    setWireframe(root)
+    show(root)
+
+if __name__ == "__main__":
+    #draw_wireframe()
+    #draw_colored_cubes()
+    draw_with_quads()
