@@ -13,13 +13,15 @@ class TestReadWriteFiles(unittest.TestCase):
 
     def test_readWriteFiles(self):
         try:
-            os.mkdir(common.getFromTestDir("/results"))
+            print "create results folder"
+            print common.getFromTestDir("./results")
+            os.mkdir(common.getFromTestDir("./results"))
         except:
-            pass
+            print "WARNING: cannot create 'results' folder"
 
         for n in ["simple", "test", "fr_078_tidyup", "freiburg1_360"]:
             inFileName = common.getFromTestDir("../resources/{0}.bt".format(n))
-            outFileName = common.getFromTestDir("/results/_rewrite_{0}.bt".format(n))
+            outFileName = common.getFromTestDir("./results/_rewrite_{0}.bt".format(n))
             t = time.time()
             octree = OctreeParser().readFile(inFileName)
             tread = time.time() - t
