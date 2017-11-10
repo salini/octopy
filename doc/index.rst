@@ -1,10 +1,10 @@
-.. myProject documentation master file, created by
-   sphinx-quickstart on Tue May 30 22:08:37 2017.
+.. octopy documentation master file, created by
+   sphinx-quickstart on Fri Nov 10 19:20:34 2017.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to myProject's documentation!
-=====================================
+Welcome to octopy's documentation!
+==================================
 
 .. toctree::
    :maxdepth: 2

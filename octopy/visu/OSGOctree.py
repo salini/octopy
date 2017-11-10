@@ -19,3 +19,12 @@ def createOSGCubes(cubes):
 
     return root
 
+
+
+def createOSGQuads(quads):
+    print "start creating OSG quads"
+    root = osg.Group()
+    for q in quads:
+        pos = q[0]
+        normal = q[1]
+        l = q [2]

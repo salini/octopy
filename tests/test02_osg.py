@@ -6,7 +6,7 @@ import unittest
 import time
 
 from octopy.OctreeParser import OctreeParser
-from octopy.Ocnode import getFree, getOccupied, getUnknown, convertNodesToCubes
+from octopy.Ocnode import getFree, getOccupied, getUnknown, nodesToCubes
 from octopy.visu.core import getViewer
 from octopy.visu.OSGOctree import createOSGCubes
 
@@ -26,7 +26,7 @@ class TestOSGVisualization(unittest.TestCase):
 
             t = time.time()
             occupied = getOccupied(octree.root)
-            cubes = convertNodesToCubes(occupied, octree.getResolutionTable())
+            cubes = nodesToCubes(occupied, octree.getResolutionTable())
             root = createOSGCubes(cubes)
             tconv = time.time() - t
 

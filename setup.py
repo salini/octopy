@@ -32,7 +32,7 @@ class RunTestCmd(Command):
         sys.exit(os.system("python "+CWD+"/tests/runAllTests.py"))
 
 
-cmdclass["run_test"] = RunTestCmd
+cmdclass["run_tests"] = RunTestCmd
 
 
 class RunPyLintCmd(Command):
@@ -46,7 +46,7 @@ class RunPyLintCmd(Command):
         pass
 
     def run(self):
-        sys.exit(os.system("pylint myProject"))
+        sys.exit(os.system("pylint octopy"))
 
 cmdclass["run_pylint"] = RunPyLintCmd
 

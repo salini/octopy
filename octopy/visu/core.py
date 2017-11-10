@@ -21,9 +21,8 @@ def getViewer(x=50,y=50,w=800,h=600):
     return viewer
 
 
-def show(octree):
-    root = OSGOctree.createOSGOctree(octree)
-    viewer = core.getViewer()
+def show(root):
+    viewer = getViewer()
     viewer.setSceneData(root.__disown__())
     viewer.run()
     viewer.setSceneData(None)

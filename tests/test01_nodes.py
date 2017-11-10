@@ -6,7 +6,7 @@ import unittest
 import time
 
 from octopy.OctreeParser import OctreeParser
-from octopy.Ocnode import getFree, getOccupied, getUnknown, convertNodesToCubes
+from octopy.Ocnode import getFree, getOccupied, getUnknown, nodesToCubes
 
 
 class TestNodeExploration(unittest.TestCase):
@@ -31,7 +31,7 @@ class TestNodeExploration(unittest.TestCase):
         print "UNKNOWN:", getUnknown(octree.root)
         print "OCCUPIED[1]:", getOccupied(octree.root[1])
 
-        print "CUBES:", convertNodesToCubes(getOccupied(octree.root), octree.getResolutionTable())
+        print "CUBES:", nodesToCubes(getOccupied(octree.root), octree.getResolutionTable())
 
 
         for n in ["simple", "test", "fr_078_tidyup", "freiburg1_360"]:
