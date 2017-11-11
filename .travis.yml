@@ -13,7 +13,8 @@ before_install:
   - cd build
   - cmake .. -DCMAKE_BUILD_TYPE=Relase  -DCMAKE_CXX_FLAGS=-fpermissive
   - make -j4
-  - sudo make install
+  - cd lib/python/osgswig*
+  - sudo python setup.py install
   - cd $ROOT
   - cd octopy
 install:
