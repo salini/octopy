@@ -65,7 +65,18 @@ def nodeToQuad(node, resolutionTable):
 
 def nodesToQuads(nodes, resolutionTable):
     quads = [q for n in nodes for q in nodeToQuad(n, resolutionTable)]
-    return quads
+
+    registeredPos = {}
+
+    for q in quads:
+        pos = tuple(np.mean(q, 0))
+        if pos in registeredPos:
+            del registeredPos[pos]
+            continue
+        else:
+            registeredPos[pos] = q
+
+    return registeredPos.values()
 
 
 
@@ -83,7 +94,7 @@ if __name__ == "__main__":
     print "UNKNOWN:", getUnknown(octree.root)
     print "OCCUPIED[1]:", getOccupied(octree.root[1])
 
-    print "CUBES:", convertNodesToCubes(getOccupied(octree.root), octree.getResolutionTable())
+    print "CUBES:", nodesToCubes(getOccupied(octree.root), octree.getResolutionTable())
 
     for n in ["simple", "test", "fr_078_tidyup", "freiburg1_360"]:
         inFileName = "../resources/{0}.bt".format(n)

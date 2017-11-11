@@ -8,8 +8,11 @@ from octopy.visu.OSGOctree import createOSGCubes, createOSGQuads
 from octopy.visu.effects import setWireframe, setMaterialColor, createOSGGroup
 
 
-inFileName = common.getFromTestDir("../resources/simple.bt")
+#inFileName = common.getFromTestDir("../resources/simple.bt")
 #inFileName = common.getFromTestDir("../resources/test.bt")
+inFileName = common.getFromTestDir("../resources/fr_078_tidyup.bt")
+#inFileName = common.getFromTestDir("../resources/freiburg1_360.bt") # not working for now
+
 octree = OctreeParser().readFile(inFileName)
 
 
@@ -49,7 +52,7 @@ def draw_with_quads():
     q = nodesToQuads(o, octree.getResolutionTable())
     root = createOSGQuads(q)
     setMaterialColor(root, (1,0,0,1))
-    setWireframe(root)
+    #setWireframe(root)
     show(root)
 
 if __name__ == "__main__":
