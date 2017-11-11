@@ -29,7 +29,9 @@ class RunTestCmd(Command):
         pass
 
     def run(self):
-        sys.exit(os.system("python "+CWD+"/tests/runAllTests.py"))
+        res = os.system("python "+CWD+"/tests/runAllTests.py")
+        print "RESULTS:", res
+        sys.exit(res)
 
 
 cmdclass["run_tests"] = RunTestCmd
