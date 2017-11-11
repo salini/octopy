@@ -3,8 +3,21 @@ python:
   - "2.6"
   - "2.7"
 # command to install dependencies
+before_install:
+  - sudo apt-get install git cmake libopenscenegraph-dev swig
+  - cd ..
+  - ROOT=$PWD
+  - git clone https://github.com/salini/osgswig.git
+  - cd osgswig
+  - mkdir build
+  - cd build
+  - cmake .. -DCMAKE_BUILD_TYPE=Relase  -DCMAKE_CXX_FLAGS=-fpermissive
+  - make -j4
+  - sudo make install
+  - cd $ROOT
+  - cd octopy
 install:
   - pip install -r requirements.txt
 # command to run tests
 script:
-  - python setup.py run_test
+  - python setup.py run_tests
