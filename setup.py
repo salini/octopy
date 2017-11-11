@@ -1,5 +1,5 @@
 
-import os
+import os, sys
 from distutils.core import setup, Command
 
 import subprocess
