@@ -1,5 +1,5 @@
 
-import os, sys
+import os
 from distutils.core import setup, Command
 
 import subprocess
@@ -30,8 +30,8 @@ class RunTestCmd(Command):
 
     def run(self):
         res = os.system("python "+CWD+"/tests/runAllTests.py")
-        print "RESULTS:", res
-        sys.exit(res)
+        if res != 0:
+            sys.exit(1)
 
 
 cmdclass["run_tests"] = RunTestCmd
@@ -48,7 +48,9 @@ class RunPyLintCmd(Command):
         pass
 
     def run(self):
-        sys.exit(os.system("pylint octopy"))
+        res = os.system("pylint octopy")
+        if res != 0:
+            sys.exit(1)
 
 cmdclass["run_pylint"] = RunPyLintCmd
 
