@@ -1,23 +1,33 @@
+# https://travis-ci.org/salini/octopy
+dist: trusty
+
+# Use containers instead of full VMs for faster startup.
+sudo: false
+
 language: python
 python:
   - "2.7"
+
 # command to install dependencies
-before_install:
-  - sudo apt-get install git cmake libopenscenegraph-dev swig
-  - cd ..
-  - ROOT=$PWD
-  - git clone https://github.com/salini/osgswig.git
-  - cd osgswig
-  - mkdir build
-  - cd build
-  - cmake .. -DCMAKE_BUILD_TYPE=Relase  -DCMAKE_CXX_FLAGS=-fpermissive
-  - make -j4
-  - cd lib/python/osgswig*
-  - sudo python setup.py install --user
-  - cd $ROOT
-  - cd octopy
+before_install: true
+  ### install osgswig
+  #- sudo apt-get install git cmake libopenscenegraph-dev swig
+  #- cd ..
+  #- ROOT=$PWD
+  #- git clone https://github.com/salini/osgswig.git
+  #- cd osgswig
+  #- mkdir build
+  #- cd build
+  #- cmake .. -DCMAKE_BUILD_TYPE=Relase  -DCMAKE_CXX_FLAGS=-fpermissive
+  #- make -j4
+  #- cd lib/python/osgswig*
+  #- sudo python setup.py install
+  #- cd $ROOT
+  #- cd octopy
+
 install:
   - pip install -r requirements.txt
+
 # command to run tests
 script:
   - python setup.py run_tests
