@@ -4,16 +4,30 @@ from Octree import Octree
 
 
 
-def _fromCharToBitSet(c):
-    bs = [(True if e=="1" else False) for e in '{0:08b}'.format(ord(c), 'b')]
-    bs.reverse()
-    return bs
+##def _fromCharToBitSet(c):
+##    bs = [(True if e=="1" else False) for e in '{0:08b}'.format(ord(c), 'b')]
+##    bs.reverse()
+##    return bs
+##
+##def _fromBitSetToChar(bs):
+##    bs.reverse()
+##    bsstring = "".join(["1" if b is True else "0" for b in bs])
+##    c = chr(int(bsstring, 2))
+##    return c
 
-def _fromBitSetToChar(bs):
-    bs.reverse()
-    bsstring = "".join(["1" if b is True else "0" for b in bs])
-    c = chr(int(bsstring, 2))
-    return c
+
+### functions from: https://wiki.python.org/moin/BitManipulation
+def testBit(int_type, offset):
+    mask = 1 << offset
+    return (int_type & mask)
+
+def setBit(int_type, offset):
+    mask = 1 << offset
+    return (int_type | mask)
+
+def clearBit(int_type, offset):
+    mask = ~(1 << offset)
+    return (int_type & mask)
 
 
 class OctreeParser(object):
@@ -51,26 +65,23 @@ class OctreeParser(object):
 
 
     def parseBinaryNode(self, bstream, node):
-        child1to4_char = bstream.read(1)
-        child5to8_char = bstream.read(1)
-
-        child1to4 = _fromCharToBitSet(child1to4_char)
-        child5to8 = _fromCharToBitSet(child5to8_char)
+        child1to4 = ord(bstream.read(1))
+        child5to8 = ord(bstream.read(1))
 
         for i in range(4):
-            if (child1to4[2*i] is True) and (child1to4[(2*i)+1] is False):
+            if testBit(child1to4, 2*i) and not testBit(child1to4, 2*i+1):
                 node[i] = False # child is free leaf
-            elif (child1to4[2*i] is False) and (child1to4[(2*i)+1] is True):
+            elif not testBit(child1to4, 2*i) and testBit(child1to4, 2*i+1):
                node[i] = True # child is occupied leaf
-            elif (child1to4[2*i] is True) and (child1to4[(2*i)+1] is True):
+            elif testBit(child1to4, 2*i) and testBit(child1to4, 2*i+1):
                 node[i] = [None]*8 # child have hildren
 
         for i in range(4):
-            if (child5to8[2*i] is True) and (child5to8[(2*i)+1] is False):
+            if testBit(child5to8, 2*i) and not testBit(child5to8, 2*i+1):
                 node[i+4] = False # child is free leaf
-            elif (child5to8[2*i] is False) and (child5to8[(2*i)+1] is True):
+            elif not testBit(child5to8, 2*i) and testBit(child5to8, 2*i+1):
                 node[i+4] = True # child is occupied leaf
-            elif (child5to8[2*i] is True) and (child5to8[(2*i)+1] is True):
+            elif testBit(child5to8, 2*i) and testBit(child5to8, 2*i+1):
                 node[i+4] = [None]*8 # child have hildren
 
         for i in range(8):
@@ -113,31 +124,31 @@ data
 
 
     def writeBinaryNode(self, bstream, node):
-        child1to4 = [None]*8
-        child5to8 = [None]*8
+        child1to4 = 0
+        child5to8 = 0
 
         for i in range(4):
             if node[i] is None:
-                child1to4[2*i] = False; child1to4[(2*i)+1] = False
+                child1to4 = clearBit(child1to4, 2*i); child1to4 = clearBit(child1to4, 2*i+1)
             elif node[i] is True:
-                child1to4[2*i] = False; child1to4[(2*i)+1] = True
+                child1to4 = clearBit(child1to4, 2*i); child1to4 = setBit(child1to4, 2*i+1)
             elif node[i] is False:
-                child1to4[2*i] = True;  child1to4[(2*i)+1] = False
+                child1to4 = setBit(child1to4, 2*i);  child1to4 = clearBit(child1to4, 2*i+1)
             elif isinstance(node[i], list):
-                child1to4[2*i] = True; child1to4[(2*i)+1] = True
+                child1to4 = setBit(child1to4, 2*i); child1to4 = setBit(child1to4, 2*i+1)
 
         for i in range(4):
             if node[i+4] is None:
-                child5to8[2*i] = False; child5to8[(2*i)+1] = False
+                child5to8 = clearBit(child5to8, 2*i); child5to8 = clearBit(child5to8, 2*i+1)
             elif node[i+4] is True:
-                child5to8[2*i] = False; child5to8[(2*i)+1] = True
+                child5to8 = clearBit(child5to8, 2*i); child5to8 = setBit(child5to8, 2*i+1)
             elif node[i+4] is False:
-                child5to8[2*i] = True;  child5to8[(2*i)+1] = False
+                child5to8 = setBit(child5to8, 2*i);  child5to8 = clearBit(child5to8, 2*i+1)
             elif isinstance(node[i+4], list):
-                child5to8[2*i] = True; child5to8[(2*i)+1] = True
+                child5to8 = setBit(child5to8, 2*i); child5to8 = setBit(child5to8, 2*i+1)
 
-        child1to4_char = _fromBitSetToChar(child1to4)
-        child5to8_char = _fromBitSetToChar(child5to8)
+        child1to4_char = chr(child1to4)
+        child5to8_char = chr(child5to8)
 
         bstream.write(child1to4_char)
         bstream.write(child5to8_char)
@@ -147,34 +158,9 @@ data
                 self.writeBinaryNode(bstream, node[i])
 
 
-
     def writeFile(self, fileName, octree):
         with open(fileName, "wb") as F:
             self.writeFileHeader(F, octree)
             self.writeBinaryData(F, octree)
-
-
-
-
-if __name__ == "__main__":
-    import time
-    import filecmp
-
-    for n in ["simple", "test", "fr_078_tidyup", "freiburg1_360"]:
-        inFileName = "../resources/{0}.bt".format(n)
-        outFileName = "../resources/_rewrite_{0}.bt".format(n)
-        t = time.time()
-        octree = OctreeParser().readFile(inFileName)
-        tread = time.time() - t
-        t = time.time()
-        OctreeParser().writeFile(outFileName, octree)
-        twrite = time.time() - t
-        print "READ:", inFileName, tread
-        print "size from file:", octree.size
-        print "size of octree:", octree.getSize()
-        print "WRITE:", outFileName, twrite
-        print "SAME?:", filecmp.cmp(inFileName, outFileName, False)
-
-
 
 

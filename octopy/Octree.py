@@ -34,19 +34,3 @@ class Octree(object):
         depth = self.getDepth(self.root)
         return [self.resolution * 2**(depth-i-1) for i in range(depth)]
 
-
-
-
-if __name__ == "__main__":
-    import time
-    from OctreeParser import OctreeParser
-
-    for n in ["simple", "test", "fr_078_tidyup", "freiburg1_360"]:
-        inFileName = "../resources/{0}.bt".format(n)
-        octree = OctreeParser().readFile(inFileName)
-        t = time.time()
-        depth = octree.getDepth(octree.root)
-        tdepth = time.time() - t
-        print "DEPTH:", inFileName, tdepth, depth
-        print "Resolution Table:", octree.getResolutionTable()
-

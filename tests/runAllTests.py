@@ -14,6 +14,7 @@ if __name__ == '__main__':
     suite = unittest.TestSuite()
     suite.addTest(unittest.defaultTestLoader.discover(cwd, "test00_read_write.py"))
     suite.addTest(unittest.defaultTestLoader.discover(cwd, "test01_nodes.py"))
+    #suite.addTest(unittest.defaultTestLoader.discover(cwd, "test02_osg.py"))
 
     unittest.main(defaultTest='suite', verbosity=2)
 
