@@ -29,10 +29,12 @@ class TestReadWriteFiles(unittest.TestCase):
             OctreeParser().writeFile(outFileName, octree)
             twrite = time.time() - t
             areSame = filecmp.cmp(inFileName, outFileName)
-            print "READ:", inFileName, tread
+
+            print "=========>>>", inFileName, " --> ", outFileName
+            print "READ (s):", tread
+            print "WRITE (s):", twrite
             print "size from file:", octree.size
             print "size of octree:", octree.getSize()
-            print "WRITE:", outFileName, twrite
             print "SAME?:", areSame
 
             self.assertTrue(areSame)

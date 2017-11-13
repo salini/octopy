@@ -30,8 +30,9 @@ class TestOSGVisualization(unittest.TestCase):
             root = createOSGCubes(cubes)
             tconv = time.time() - t
 
-            print "READ:", inFileName, tread
-            print "CONVERT IN CUBES:", tconv
+            print "=========>>>", inFileName
+            print "READ (s):", tread
+            print "CONVERT IN CUBES (s):", tconv
             viewer = getViewer()
             viewer.setSceneData(root.__disown__())
             if interactive:

@@ -18,18 +18,21 @@ class TestNodeExploration(unittest.TestCase):
             t = time.time()
             depth = octree.getDepth(octree.root)
             tdepth = time.time() - t
-            print "DEPTH:", inFileName, tdepth, depth
+            print "=========>>>", inFileName
+            print "time depth (s):", tdepth
+            print "depth:", depth
 
 
     def test_createCoordinates(self):
         inFileName = common.getFromTestDir("../resources/simple.bt")
         octree = OctreeParser().readFile(inFileName)
-        print "OCTREE:", octree.root
+        print "=========>>>", inFileName
+        print "OCTREE rep:", octree.root
 
-        print "FREE:", getFree(octree.root)
-        print "OCCUPIED:", getOccupied(octree.root)
-        print "UNKNOWN:", getUnknown(octree.root)
-        print "OCCUPIED[1]:", getOccupied(octree.root[1])
+        print "FREE rep:", getFree(octree.root)
+        print "OCCUPIED rep:", getOccupied(octree.root)
+        print "UNKNOWN rep:", getUnknown(octree.root)
+        print "OCCUPIED[1] rep:", getOccupied(octree.root[1])
 
         print "CUBES:", nodesToCubes(getOccupied(octree.root), octree.getResolutionTable())
 
@@ -48,9 +51,16 @@ class TestNodeExploration(unittest.TestCase):
             t = time.time()
             unknown = getUnknown(octree.root)
             tunknown = time.time() - t
-            print "READ:", inFileName, tread
-            print "T free/occupied/unknown:", tfree, tocc, tunknown
-            print "nb node/free/occupied/unknown", octree.size, len(free), len(occupied), len(unknown)
+
+            print "=========>>>", inFileName
+            print "READ (s):", tread
+            print "T free (s):", tfree,
+            print "T occupied (s):",tocc
+            print "T unknown (s):", tunknown
+            print "nb node octree:", octree.size
+            print "nb node free:", len(free)
+            print "nb node occupied:",len(occupied)
+            print "nb node unknown:", len(unknown)
 
 
 
