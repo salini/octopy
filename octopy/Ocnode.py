@@ -2,95 +2,38 @@
 
 import numpy as np
 
-#from bitarray import bitarray
+def getValueTree(node, value, coordinate=0):
+    """ recursive operation to extract tree with 'coordinates' with corresponding value
 
+    coordinates are integers that coorespond to the tree branches:
+    if one node is the fifth child of a parent, its coordinate is 4 ==> 0b100
+    again if there is two levels, 3child then 4th child, coordinate is:
+    [2, 3] ==> [0b010, 0b011] ==> coord = 0b 010 011
+    etc.
 
-
-_bitCoord = [
-[False, True, False, True, False, True, False, True],
-[False, False, True, True, False, False, True, True],
-[False, False, False, False, True, True, True, True],
-]
-
-_coord = [
-"01010101",
-"00110011",
-"00001111",
-]
-
-
-def getCoordTree_list(node, value, coordinate=None):
-    if coordinate is None:
-        #coordinate = [bitarray(), bitarray(), bitarray()]
-        coordinate = [[], [], []]
-
-    cnode = [coordinate, []]
-
-    for i in range(8):
-        if node[i] is not None:
-            #ci = [bitarray(coordinate[0]), bitarray(coordinate[1]), bitarray(coordinate[2])]
-            ci = [list(coordinate[0]), list(coordinate[1]), list(coordinate[2])]
-            ci[0].append(_bitCoord[0][i]); ci[1].append(_bitCoord[1][i]); ci[2].append(_bitCoord[2][i])
-
-            if node[i] == value:
-                cnode[1].append([ci, value])
-            elif isinstance(node[i], list):
-                cnode[1].append([ci, getCoordTree_list(node[i], value, ci)])
-    return cnode
-
-
-
-
-
-
-def getCoordTree_string(node, value, coordinate=None):
-    if coordinate is None:
-        coordinate = ["", "", ""]
-
-    cnode = [coordinate, []]
-
-    for i in range(8):
-        if node[i] is not None:
-            ci = [coordinate[0] + _coord[0][i], coordinate[1] + _coord[1][i], coordinate[2] + _coord[2][i]]
-            if node[i] == value:
-                cnode[1].append([ci, value])
-            elif isinstance(node[i], list):
-                cnode[1].append([ci, getCoordTree_string(node[i], value, ci)])
-    return cnode
-
-
-def getCoordTree_bit(node, value, coordinate=0):
-    cnode = [coordinate, []]
+    TODO: the value should be replaced by a comparison function...
+    """
+    #cnode = [coordinate, []]
+    cnode = []
 
     for i in range(8):
         if node[i] is not None:
             ci = (coordinate<<3) | i
             if node[i] == value:
-                cnode[1].append([ci, value])
+                cnode.append([ci, value])
             elif isinstance(node[i], list):
-                cnode[1].append([ci, getCoordTree_bit(node[i], value, ci)])
+                cnode.append([ci, getValueTree(node[i], value, ci)])
     return cnode
 
 
-def getLeaf(node, value, x="", y="", z=""):
-    leaves = []
-    for i in range(8):
-        if node[i] == value:
-            leaves.append( (x+_coord[0][i], y+_coord[1][i], z+_coord[2][i]) )
-        elif isinstance(node[i], list):
-            leaves.extend(getLeaf(node[i], value, x+_coord[0][i], y+_coord[1][i], z+_coord[2][i]))
+def getFreeTree(node, coordinate=0):
+    return getValueTree(node, False, coordinate)
 
-    return leaves
+def getOccupiedTree(node, coordinate=0):
+    return getValueTree(node, True, coordinate)
 
-
-def getFree(node, x="", y="", z=""):
-    return getLeaf(node, False, x, y, z)
-
-def getOccupied(node, x="", y="", z=""):
-    return getLeaf(node, True, x, y, z)
-
-def getUnknown(node, x="", y="", z=""):
-    return getLeaf(node, None, x, y, z)
+def getUnknownTree(node, coordinate=0):
+    return getValueTree(node, None, coordinate)
 
 
 

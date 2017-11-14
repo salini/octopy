@@ -2,32 +2,8 @@
 
 from Octree import Octree
 
+from bitOperation import testBit, setBit, clearBit
 
-
-##def _fromCharToBitSet(c):
-##    bs = [(True if e=="1" else False) for e in '{0:08b}'.format(ord(c), 'b')]
-##    bs.reverse()
-##    return bs
-##
-##def _fromBitSetToChar(bs):
-##    bs.reverse()
-##    bsstring = "".join(["1" if b is True else "0" for b in bs])
-##    c = chr(int(bsstring, 2))
-##    return c
-
-
-### functions from: https://wiki.python.org/moin/BitManipulation
-def testBit(int_type, offset):
-    mask = 1 << offset
-    return (int_type & mask)
-
-def setBit(int_type, offset):
-    mask = 1 << offset
-    return (int_type | mask)
-
-def clearBit(int_type, offset):
-    mask = ~(1 << offset)
-    return (int_type & mask)
 
 
 class OctreeParser(object):

@@ -6,7 +6,7 @@ import unittest
 import time
 
 from octopy.OctreeParser import OctreeParser
-from octopy.Ocnode import getFree, getOccupied, getUnknown, nodesToCubes
+from octopy.Ocnode import getFreeTree, getOccupiedTree, getUnknownTree, nodesToCubes
 
 
 class TestNodeExploration(unittest.TestCase):
@@ -29,13 +29,10 @@ class TestNodeExploration(unittest.TestCase):
         print "=========>>>", inFileName
         print "OCTREE rep:", octree.root
 
-        print "FREE rep:", getFree(octree.root)
-        print "OCCUPIED rep:", getOccupied(octree.root)
-        print "UNKNOWN rep:", getUnknown(octree.root)
-        print "OCCUPIED[1] rep:", getOccupied(octree.root[1])
-
-        print "CUBES:", nodesToCubes(getOccupied(octree.root), octree.getResolutionTable())
-
+        print "FREE rep:", getFreeTree(octree.root)
+        print "OCCUPIED rep:", getOccupiedTree(octree.root)
+        print "UNKNOWN rep:", getUnknownTree(octree.root)
+        print "OCCUPIED[1] rep:", getOccupiedTree(octree.root[1])
 
         for n in ["simple", "test", "fr_078_tidyup", "freiburg1_360"]:
             inFileName = common.getFromTestDir("../resources/{0}.bt".format(n))
@@ -43,13 +40,13 @@ class TestNodeExploration(unittest.TestCase):
             octree = OctreeParser().readFile(inFileName)
             tread = time.time() - t
             t = time.time()
-            free = getFree(octree.root)
+            free = getFreeTree(octree.root)
             tfree = time.time() - t
             t = time.time()
-            occupied = getOccupied(octree.root)
+            occupied = getOccupiedTree(octree.root)
             tocc = time.time() - t
             t = time.time()
-            unknown = getUnknown(octree.root)
+            unknown = getUnknownTree(octree.root)
             tunknown = time.time() - t
 
             print "=========>>>", inFileName

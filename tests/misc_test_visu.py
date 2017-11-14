@@ -2,9 +2,9 @@
 import common  # to load path to octopy package
 
 from octopy.OctreeParser import OctreeParser
-from octopy.Ocnode import getFree, getOccupied, getUnknown, nodesToCubes, nodesToQuads
+from octopy.Ocnode import getFreeTree, getOccupiedTree, getUnknownTree, nodesToCubes, nodesToQuads
 from octopy.visu.core import show
-from octopy.visu.OSGOctree import createOSGCubes, createOSGQuads
+from octopy.visu.OSGOctree import *
 from octopy.visu.effects import setWireframe, setMaterialColor, createOSGGroup
 
 
@@ -15,6 +15,14 @@ inFileName = common.getFromTestDir("../resources/fr_078_tidyup.bt")
 
 octree = OctreeParser().readFile(inFileName)
 
+
+def draw_simple():
+    inFileName = common.getFromTestDir("../resources/simple.bt")
+    octree = OctreeParser().readFile(inFileName)
+    occupied = getOccupiedTree(octree.root)
+    #root = createOSGTree_recursiveRawCubes(occupied, octree.getResolutionTable()[0]) #NOT EFFICIENT
+    root = createOSGTree_flatRawCubes(occupied, octree.getResolutionTable()[0])
+    show(root)
 
 def draw_wireframe():
     occupied = getOccupied(octree.root)
@@ -56,6 +64,7 @@ def draw_with_quads():
     show(root)
 
 if __name__ == "__main__":
+    draw_simple()
     #draw_wireframe()
     #draw_colored_cubes()
-    draw_with_quads()
+    #draw_with_quads()

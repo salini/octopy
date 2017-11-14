@@ -5,6 +5,71 @@ from osgswig import osg, osgUtil
 
 import numpy as np
 
+from ..bitOperation import testBit
+
+
+_POSITION = [
+osg.Vec3d(-0.25,-0.25,-0.25),
+osg.Vec3d( 0.25,-0.25,-0.25),
+osg.Vec3d(-0.25, 0.25,-0.25),
+osg.Vec3d( 0.25, 0.25,-0.25),
+osg.Vec3d(-0.25,-0.25, 0.25),
+osg.Vec3d( 0.25,-0.25, 0.25),
+osg.Vec3d(-0.25, 0.25, 0.25),
+osg.Vec3d( 0.25, 0.25, 0.25),
+]
+
+_BOX = getBox((0,0,0), (1,1,1))
+
+def createOSGBranches(osgNode, treeNode):
+    for coordinate, value in treeNode:
+        osgn = osg.AutoTransform()
+        osgNode.addChild(osgn)
+        coord = coordinate & 7
+        osgn.setPosition(_POSITION[coord])
+        osgn.setScale(0.5)
+        if isinstance(value, list):
+            createOSGBranches(osgn, value)
+        else:
+            osgn.addChild(_BOX)
+
+def createOSGTree_recursiveRawCubes(treeRoot, dim0):
+    print "start creating OSG tree as flat cubes"
+    osgRoot = osg.AutoTransform()
+    osgRoot.setScale(dim0)
+    createOSGBranches(osgRoot, treeRoot)
+    print "end"
+    return osgRoot
+
+
+
+
+
+def getPosFromCoordinate(coord, table):
+    x = sum([0.5*table[-idx-1] * (1 if testBit(coord, 3*idx  ) else -1) for idx in range(len(table))])
+    y = sum([0.5*table[-idx-1] * (1 if testBit(coord, 3*idx+1) else -1) for idx in range(len(table))])
+    z = sum([0.5*table[-idx-1] * (1 if testBit(coord, 3*idx+2) else -1) for idx in range(len(table))])
+    return (x,y,z)
+
+def parseNodes(osgRootNode, treeNode, table):
+    for coordinate, value in treeNode:
+        if isinstance(value, list):
+            subtable = list(table)
+            subtable.append(subtable[-1]*0.5)
+            parseNodes(osgRootNode, value, subtable)
+        else:
+            pos = getPosFromCoordinate(coordinate, table)
+            extents = (table[-1], table[-1], table[-1])
+            osgRootNode.addChild(getBox(pos, extents))
+
+
+def createOSGTree_flatRawCubes(treeRoot, dim0):
+    table = [dim0]
+    print "start creating OSG tree as flat cubes"
+    root = osg.Group()
+    parseNodes(root, treeRoot, table)
+    print "end"
+    return root
 
 
 
