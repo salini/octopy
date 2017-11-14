@@ -7,6 +7,7 @@ import numpy as np
 
 from ..bitOperation import testBit
 
+from ..Ocnode import Ocnode
 
 _POSITION = [
 osg.Vec3d(-0.25,-0.25,-0.25),
@@ -20,10 +21,13 @@ osg.Vec3d( 0.25, 0.25, 0.25),
 ]
 
 _BOX = getBox((0,0,0), (1,1,1))
+_BOX.setDataVariance(osg.Object.STATIC)
+
 
 def createOSGBranches(osgNode, treeNode):
     for coordinate, value in treeNode:
         osgn = osg.AutoTransform()
+        osgn.setDataVariance(osg.Object.STATIC)
         osgNode.addChild(osgn)
         coord = coordinate & 7
         osgn.setPosition(_POSITION[coord])
@@ -33,9 +37,11 @@ def createOSGBranches(osgNode, treeNode):
         else:
             osgn.addChild(_BOX)
 
+
 def createOSGTree_recursiveRawCubes(treeRoot, dim0):
     print "start creating OSG tree as flat cubes"
     osgRoot = osg.AutoTransform()
+    osgRoot.setDataVariance(osg.Object.STATIC)
     osgRoot.setScale(dim0)
     createOSGBranches(osgRoot, treeRoot)
     print "end"
@@ -51,26 +57,48 @@ def getPosFromCoordinate(coord, table):
     z = sum([0.5*table[-idx-1] * (1 if testBit(coord, 3*idx+2) else -1) for idx in range(len(table))])
     return (x,y,z)
 
-def parseNodes(osgRootNode, treeNode, table):
-    for coordinate, value in treeNode:
-        if isinstance(value, list):
-            subtable = list(table)
-            subtable.append(subtable[-1]*0.5)
-            parseNodes(osgRootNode, value, subtable)
-        else:
+
+def parseTreeList(osgRootNode, treeNode, table, parent_coordinate=0):
+    for ccoord, value in treeNode:
+        coordinate = (parent_coordinate<<3) | ccoord
+        if not isinstance(value, list):
             pos = getPosFromCoordinate(coordinate, table)
             extents = (table[-1], table[-1], table[-1])
             osgRootNode.addChild(getBox(pos, extents))
+        else:
+            subtable = list(table)
+            subtable.append(subtable[-1]*0.5)
+            parseTreeList(osgRootNode, value, subtable, coordinate)
+
+
+
+def parseTreeOcnode(osgRootNode, treeNode, table, parent_coordinate=0):
+    for child in treeNode.children:
+        coordinate = (parent_coordinate<<3) | child.coordinate
+        if child.isLeaf:
+            pos = getPosFromCoordinate(coordinate, table)
+            extents = (table[-1], table[-1], table[-1])
+            osgRootNode.addChild(getBox(pos, extents))
+        else:
+            subtable = list(table)
+            subtable.append(subtable[-1]*0.5)
+            parseTreeOcnode(osgRootNode, child, subtable, coordinate)
 
 
 def createOSGTree_flatRawCubes(treeRoot, dim0):
     table = [dim0]
     print "start creating OSG tree as flat cubes"
     root = osg.Group()
-    parseNodes(root, treeRoot, table)
+    if isinstance(treeRoot, list):
+        parseTreeList(root, treeRoot, table)
+    elif isinstance(treeRoot, Ocnode):
+        parseTreeOcnode(root, treeRoot, table)
     print "end"
     return root
 
+
+
+#def createOSGTree_flatRawQuads(treeRoot, dim0):
 
 
 def createOSGCubes(cubes):

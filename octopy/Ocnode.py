@@ -2,7 +2,44 @@
 
 import numpy as np
 
-def getValueTree(node, value, coordinate=0):
+
+class Ocnode(object):
+    def __init__(self, parent=None, coordinate=0, isLeaf=False, value=False):
+        self.parent = parent
+        self.coordinate = coordinate
+        self.isLeaf = isLeaf
+        self.value = value
+        self.children = []
+
+
+
+def getOcnodeTree(node, value, parent=None, coordinate=None):
+    ocnode = Ocnode(parent, coordinate)
+
+    for i in range(8):
+        if node[i] is not None:
+            if node[i] == value:
+                cnode = Ocnode(ocnode, i, True, value)
+                ocnode.children.append(cnode)
+            elif isinstance(node[i], list):
+                cnode = getOcnodeTree(node[i], value, ocnode, i)
+                ocnode.children.append(cnode)
+
+    return ocnode
+
+def getFreeOcnodeTree(node):
+    return getOcnodeTree(node, False)
+
+def getOccupiedOcnodeTree(node):
+    return getOcnodeTree(node, True)
+
+def getUnknownOcnodeTree(node):
+    return getOcnodeTree(node, None)
+
+
+
+
+def getListTree(node, value):
     """ recursive operation to extract tree with 'coordinates' with corresponding value
 
     coordinates are integers that coorespond to the tree branches:
@@ -13,75 +50,73 @@ def getValueTree(node, value, coordinate=0):
 
     TODO: the value should be replaced by a comparison function...
     """
-    #cnode = [coordinate, []]
     cnode = []
 
     for i in range(8):
         if node[i] is not None:
-            ci = (coordinate<<3) | i
             if node[i] == value:
-                cnode.append([ci, value])
+                cnode.append([i, value])
             elif isinstance(node[i], list):
-                cnode.append([ci, getValueTree(node[i], value, ci)])
+                cnode.append([i, getListTree(node[i], value)])
     return cnode
 
 
-def getFreeTree(node, coordinate=0):
-    return getValueTree(node, False, coordinate)
+def getFreeListTree(node):
+    return getListTree(node, False)
 
-def getOccupiedTree(node, coordinate=0):
-    return getValueTree(node, True, coordinate)
+def getOccupiedListTree(node):
+    return getListTree(node, True)
 
-def getUnknownTree(node, coordinate=0):
-    return getValueTree(node, None, coordinate)
-
-
-
-def _computeCoord(coord, resolutionTable):
-    return sum([0.5 * resolutionTable[i] * (1 if c=="1" else -1) for i, c in enumerate(coord)])
-
-def nodeToCube(node, resolutionTable):
-    return (
-        _computeCoord(node[0], resolutionTable),
-        _computeCoord(node[1], resolutionTable),
-        _computeCoord(node[2], resolutionTable),
-        resolutionTable[len(node[0])-1]
-    )
-
-def nodesToCubes(nodes, resolutionTable):
-    return [nodeToCube(n, resolutionTable) for n in nodes]
+def getUnknownListTree(node):
+    return getListTree(node, None)
 
 
-_unit_quads = [
-    np.array( ((-1,-1,-1), (1,-1,-1), (1,-1,1), (-1,-1,1)) ),
-    np.array( ((1,-1,-1), (1,1,-1), (1,1,1), (1,-1,1)) ),
-    np.array( ((1,1,-1), (-1,1,-1), (-1,1,1), (1,1,1)) ),
-    np.array( ((-1,1,-1), (-1,-1,-1), (-1,-1,1), (-1,1,1)) ),
-    np.array( ((-1,-1,-1), (-1,1,-1), (1,1,-1), (1,-1,-1)) ),
-    np.array( ((-1,-1,1), (1,-1,1), (1,1,1), (-1,1,1)) ),
-]
-def nodeToQuad(node, resolutionTable):
-    x0 = _computeCoord(node[0], resolutionTable)
-    y0 = _computeCoord(node[1], resolutionTable)
-    z0 = _computeCoord(node[2], resolutionTable)
-    P0 = np.array((x0, y0, z0))
-    l = resolutionTable[len(node[0])-1]
-    Q = [P0 + l*0.5*ui for ui in _unit_quads]
-    return Q
+
+##def _computeCoord(coord, resolutionTable):
+##    return sum([0.5 * resolutionTable[i] * (1 if c=="1" else -1) for i, c in enumerate(coord)])
+##
+##def nodeToCube(node, resolutionTable):
+##    return (
+##        _computeCoord(node[0], resolutionTable),
+##        _computeCoord(node[1], resolutionTable),
+##        _computeCoord(node[2], resolutionTable),
+##        resolutionTable[len(node[0])-1]
+##    )
+##
+##def nodesToCubes(nodes, resolutionTable):
+##    return [nodeToCube(n, resolutionTable) for n in nodes]
 
 
-def nodesToQuads(nodes, resolutionTable):
-    quads = [q for n in nodes for q in nodeToQuad(n, resolutionTable)]
-
-    registeredPos = {}
-
-    for q in quads:
-        pos = tuple(np.mean(q, 0))
-        if pos in registeredPos:
-            del registeredPos[pos]
-            continue
-        else:
-            registeredPos[pos] = q
-
-    return registeredPos.values()
+##_unit_quads = [
+##    np.array( ((-1,-1,-1), (1,-1,-1), (1,-1,1), (-1,-1,1)) ),
+##    np.array( ((1,-1,-1), (1,1,-1), (1,1,1), (1,-1,1)) ),
+##    np.array( ((1,1,-1), (-1,1,-1), (-1,1,1), (1,1,1)) ),
+##    np.array( ((-1,1,-1), (-1,-1,-1), (-1,-1,1), (-1,1,1)) ),
+##    np.array( ((-1,-1,-1), (-1,1,-1), (1,1,-1), (1,-1,-1)) ),
+##    np.array( ((-1,-1,1), (1,-1,1), (1,1,1), (-1,1,1)) ),
+##]
+##def nodeToQuad(node, resolutionTable):
+##    x0 = _computeCoord(node[0], resolutionTable)
+##    y0 = _computeCoord(node[1], resolutionTable)
+##    z0 = _computeCoord(node[2], resolutionTable)
+##    P0 = np.array((x0, y0, z0))
+##    l = resolutionTable[len(node[0])-1]
+##    Q = [P0 + l*0.5*ui for ui in _unit_quads]
+##    return Q
+##
+##
+##def nodesToQuads(nodes, resolutionTable):
+##    quads = [q for n in nodes for q in nodeToQuad(n, resolutionTable)]
+##
+##    registeredPos = {}
+##
+##    for q in quads:
+##        pos = tuple(np.mean(q, 0))
+##        if pos in registeredPos:
+##            del registeredPos[pos]
+##            continue
+##        else:
+##            registeredPos[pos] = q
+##
+##    return registeredPos.values()
 

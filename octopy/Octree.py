@@ -9,25 +9,26 @@ class Octree(object):
 
 
     def getSize(self):
-        return self.getNumberOfNodes(self.root)
+        return Octree.getNumberOfNodes(self.root)
 
-    def getNumberOfNodes(self, node):
+    @staticmethod
+    def getNumberOfNodes(node):
         val = 1
         for child in node:
             if child in [True, False]:
                 val += 1
             elif isinstance(child, list):
-                val += self.getNumberOfNodes(child)
+                val += Octree.getNumberOfNodes(child)
 
         return val
 
-
-    def getDepth(self, node):
+    @staticmethod
+    def getDepth(node):
         subnode = [c for c in node if isinstance(c, list)]
         if len(subnode) == 0:
             return 1
         else:
-            return 1 + max([self.getDepth(c) for c in subnode])
+            return 1 + max([Octree.getDepth(c) for c in subnode])
 
 
     def getResolutionTable(self):
