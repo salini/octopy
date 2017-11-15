@@ -11,7 +11,15 @@ class Ocnode(object):
         self.value = value
         self.children = []
 
-
+    @staticmethod
+    def getNumberOfNodes(node):
+        val = 1
+        for child in node.children:
+            if child.isLeaf:
+                val += 1
+            elif isinstance(child, Ocnode):
+                val += Ocnode.getNumberOfNodes(child)
+        return val
 
 def getOcnodeTree(node, value, parent=None, coordinate=None):
     """ recursive operation to extract tree with 'coordinates' with corresponding value, as Octonode.

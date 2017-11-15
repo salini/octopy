@@ -120,9 +120,13 @@ def draw_colored_cubes():
 
 
 def draw_with_quads():
-    inFileName = common.getFromTestDir("../resources/test.bt")
+    #inFileName = common.getFromTestDir("../resources/simple.bt")
+    #inFileName = common.getFromTestDir("../resources/test.bt")
+    inFileName = common.getFromTestDir("../resources/fr_078_tidyup.bt")
+    #inFileName = common.getFromTestDir("../resources/freiburg1_360.bt") NOT WORKING
     octree = OctreeParser().readFile(inFileName)
-    o=getOccupiedListTree(octree.root)
+    #o=getOccupiedListTree(octree.root)
+    o=getOccupiedOcnodeTree(octree.root)
     t = time()
     root = createOSGTree_flatRawQuads(o, octree.getResolutionTable()[0])
     loadTime = time() - t

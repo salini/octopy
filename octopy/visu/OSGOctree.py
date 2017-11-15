@@ -98,166 +98,117 @@ def createOSGTree_flatRawCubes(treeRoot, dim0):
     return root
 
 
+_unit_quads = np.array((
+ ((-1, -1, -1), (1, -1, -1), (1, -1, 1), (-1, -1, 1)),
+ ((1, -1, -1), (1, 1, -1), (1, 1, 1), (1, -1, 1)),
+ ((1, 1, -1), (-1, 1, -1), (-1, 1, 1), (1, 1, 1)),
+ ((-1, 1, -1), (-1, -1, -1), (-1, -1, 1), (-1, 1, 1)),
+ ((-1, -1, -1), (-1, 1, -1), (1, 1, -1), (1, -1, -1)),
+ ((-1, -1, 1), (1, -1, 1), (1, 1, 1), (-1, 1, 1))
+))
 
-
-
-
-_unit_quads = [
-    np.array( ((-1,-1,-1), (1,-1,-1), (1,-1,1), (-1,-1,1)) ),
-    np.array( ((1,-1,-1), (1,1,-1), (1,1,1), (1,-1,1)) ),
-    np.array( ((1,1,-1), (-1,1,-1), (-1,1,1), (1,1,1)) ),
-    np.array( ((-1,1,-1), (-1,-1,-1), (-1,-1,1), (-1,1,1)) ),
-    np.array( ((-1,-1,-1), (-1,1,-1), (1,1,-1), (1,-1,-1)) ),
-    np.array( ((-1,-1,1), (1,-1,1), (1,1,1), (-1,1,1)) ),
-]
 
 def nodeToQuad(pos, dim):
-    Q = [np.array(pos) + dim*0.5*ui for ui in _unit_quads]
-    return Q
+    return np.array(pos) + dim * 0.5 * _unit_quads
+
+
+class QuadArray:
+    def __init__(self, n):
+        self.idx = 0
+        self.Q = np.empty((6 * n, 4, 3))
+
+    def addQuads(self, Q):
+        self.Q[self.idx:self.idx + 6, :, :] = Q
+        self.idx += 6
+
 
 def getAllQuads(treeRoot, dim0):
-    Q = []
-    fn_action = lambda pos, dim: Q.extend(q for q in nodeToQuad(pos, dim))
+    t = time()
+    n = treeRoot.getNumberOfNodes(treeRoot)
+    print n
+    print 'get nb nodes...', time() - t
+    QA = QuadArray(n)
+    fn_action = lambda pos, dim: QA.addQuads(nodeToQuad(pos, dim))
     parseTree(fn_action, treeRoot, dim0)
-    return Q
+    return QA.Q
+
 
 def trimQuads(quads):
     registeredPos = {}
-    for q in quads:
-        pos = tuple(np.mean(q, 0))
-        if pos in registeredPos:
-            del registeredPos[pos]
-            continue
+    positions = np.mean(quads, 1)
+    for q, p in zip(quads, positions):
+        p = tuple(p)
+        if p in registeredPos:
+            del registeredPos[p]
         else:
-            registeredPos[pos] = q
+            registeredPos[p] = q
 
     return registeredPos.values()
-
-
 
 
 from time import time
 
 def createOSGTree_flatRawQuads(treeRoot, dim0):
 
-    def _addQuadVertices(_vertices, _q):
-        for v in _q:
-            _vertices.push_back(osg.Vec3(*v))
+    def _addQuadVertices(_vertices, _quads):
+        for q in _quads:
+            for v in q:
+                _vertices.push_back(osg.Vec3(*v))
 
-    def _addQuadPrimitive(_geometry, _idx):
-        primitive = osg.DrawElementsUInt(osg.PrimitiveSet.QUADS, 0)
-        primitive.push_back(_idx+0)
-        primitive.push_back(_idx+1)
-        primitive.push_back(_idx+2)
-        primitive.push_back(_idx+3)
-        _geometry.addPrimitiveSet(primitive)
+    def _addQuadPrimitive(_geometry, _quads):
+        idx = 0
+        for q in _quads:
+            primitive = osg.DrawElementsUInt(osg.PrimitiveSet.QUADS, 0)
+            for i in range(4):
+                primitive.push_back(idx + i)
 
+            _geometry.addPrimitiveSet(primitive)
+            idx += 4
 
-
-    print "get all quads..."
+    print 'get all quads...'
     t = time()
     quads = getAllQuads(treeRoot, dim0)
-    print time() -t
-    print "len", len(quads)
-
-    print "trim quads..."
+    print time() - t
+    print 'len', len(quads)
+    print 'trim quads...'
     t = time()
     quads = trimQuads(quads)
-    print time() -t
-    print "len", len(quads)
+    print time() - t
+    N = len(quads)
+    print "len trim quad;", N
+    print 'start creating OSG quads'
 
-    print "start creating OSG quads"
-    t = time()
+
     root = osg.Group()
     geode = osg.Geode()
     root.addChild(geode)
-    geometry = osg.Geometry()
-    geode.addDrawable(geometry)
-    vertices = osg.Vec3Array()
-    normals = osg.Vec3Array()
-    geometry.setVertexArray(vertices)
-    geometry.setNormalArray(normals)
-    geometry.setNormalBinding(osg.Geometry.BIND_PER_PRIMITIVE_SET)
+    
+    MAXVERT = 2**18
+    INDEX = 0
+    while INDEX < N:
+        QUADS = quads[INDEX:INDEX+MAXVERT]
+        
+        geometry = osg.Geometry()
+        geode.addDrawable(geometry)
+        vertices = osg.Vec3Array()
+        geometry.setVertexArray(vertices)
 
+        t = time()
+        _addQuadVertices(vertices, QUADS)
+        print "_addQuadVertices", time() - t
+        t = time()
+        _addQuadPrimitive(geometry, QUADS)
+        print "_addQuadPrimitive", time() - t
 
-    idx = 0
-    for q in quads:
-        _addQuadVertices(vertices, q)
-        _addQuadPrimitive(geometry, idx)
-        idx +=4
-
-    print time() -t
-
-    print "smoothing..."
+        INDEX += MAXVERT
+        
+        
+    print 'smoothing...'
     t = time()
-    sv = osgUtil.SmoothingVisitor() #to compute normals
+    sv = osgUtil.SmoothingVisitor()
     sv.setCreaseAngle(0.0)
     root.accept(sv)
-    print time() -t
-
+    print time() - t
 
     return root
 
-
-
-
-##def createOSGCubes(cubes):
-##    print "start creating OSG cubes"
-##    root = osg.Group()
-##    for c in cubes:
-##        pos = (c[0], c[1], c[2])
-##        dim = (c[3], c[3], c[3])
-##        root.addChild(getBox(pos, dim))
-##    print "done"
-##
-##    return root
-##
-##
-##
-##def createOSGQuads(quads):
-##    print "start creating OSG quads"
-##    root = osg.Group()
-##    geode = osg.Geode()
-##    geometry = osg.Geometry()
-##    vertices = osg.Vec3Array()
-##    #colors = osg.Vec4Array()
-##    #normals = osg.Vec3Array()
-##
-##    root.addChild(geode)
-##    geode.addDrawable(geometry)
-##    geometry.setVertexArray(vertices)
-##    #geometry.setColorArray(colors)
-##    #geometry.setNormalArray(normals)
-##    #geometry.setColorBinding(osg.Geometry.BIND_OVERALL)
-##    #geometry.setNormalBinding(osg.Geometry.BIND_PER_PRIMITIVE_SET)
-##
-##    #colors.push_back(osg.Vec4(1,1,1,1))
-##
-##    idx = 0
-##    for q in quads:
-##        for v in q:
-##            vertices.push_back(osg.Vec3(*v))
-##        primitive = osg.DrawElementsUInt(osg.PrimitiveSet.QUADS, 0)
-##        primitive.push_back(idx+0)
-##        primitive.push_back(idx+1)
-##        primitive.push_back(idx+2)
-##        primitive.push_back(idx+3)
-##
-##        #v0 = q[1] - q[0]
-##        #v1 = q[-1] - q[0]
-##        #n = np.cross(v0, v1)
-##        #n /= np.linalg.norm(n)
-##        #normals.push_back(osg.Vec3(*n))
-##
-##        geometry.addPrimitiveSet(primitive)
-##
-##        idx +=4
-##
-##    sv = osgUtil.SmoothingVisitor() #to compute normals
-##    sv.setCreaseAngle(0.0)
-##    root.accept(sv)
-##
-##    print "done"
-##
-##    return root
-##
