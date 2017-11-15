@@ -6,9 +6,9 @@ import unittest
 import time
 
 from octopy.OctreeParser import OctreeParser
-from octopy.Ocnode import getFree, getOccupied, getUnknown, nodesToCubes
+from octopy.Ocnode import getOccupiedListTree
 from octopy.visu.core import getViewer
-from octopy.visu.OSGOctree import createOSGCubes
+from octopy.visu.OSGOctree import createOSGTree_flatRawCubes
 
 
 interactive = False
@@ -25,9 +25,8 @@ class TestOSGVisualization(unittest.TestCase):
             tread = time.time() - t
 
             t = time.time()
-            occupied = getOccupied(octree.root)
-            cubes = nodesToCubes(occupied, octree.getResolutionTable())
-            root = createOSGCubes(cubes)
+            occupied = getOccupiedListTree(octree.root)
+            root = createOSGTree_flatRawCubes(occupied, octree.getResolutionTable()[0])
             tconv = time.time() - t
 
             print "=========>>>", inFileName

@@ -2,11 +2,13 @@
 from osgswig import osg, osgViewer
 
 
-def getBox(pos, dim):
-    box = osg.Box(osg.Vec3(pos[0], pos[1], pos[2]), dim[0], dim[1], dim[2])
-    boxDrawable = osg.ShapeDrawable(box)
+def getBoxDrawable(pos, dim):
+    box = osg.Box(osg.Vec3(pos[0], pos[1], pos[2]), dim, dim, dim)
+    return osg.ShapeDrawable(box)
+
+def getBoxGeode(pos, dim):
     geode = osg.Geode()
-    geode.addDrawable(boxDrawable)
+    geode.addDrawable(getBoxDrawable(pos, dim))
     return geode
 
 

@@ -75,8 +75,8 @@ def draw_flatRawCubes():
     """
     inFileName = common.getFromTestDir("../resources/test.bt")
     octree = OctreeParser().readFile(inFileName)
-    #occupied = getOccupiedListTree(octree.root)
-    occupied = getOccupiedOcnodeTree(octree.root)
+    #occupied = getOccupiedListTree(octree.root)  # both can be used
+    occupied = getOccupiedOcnodeTree(octree.root) # both can be used
     t = time()
     root = createOSGTree_flatRawCubes(occupied, octree.getResolutionTable()[0])
     loadTime = time() - t
@@ -120,10 +120,14 @@ def draw_colored_cubes():
 
 
 def draw_with_quads():
+    inFileName = common.getFromTestDir("../resources/test.bt")
+    octree = OctreeParser().readFile(inFileName)
     o=getOccupiedListTree(octree.root)
-    q = createOSGTree_flatRawQuads(o, octree.getResolutionTable()[0])
-    root = createOSGQuads(q)
-    setMaterialColor(root, (1,0,0,1))
+    t = time()
+    root = createOSGTree_flatRawQuads(o, octree.getResolutionTable()[0])
+    loadTime = time() - t
+    print "loading time:", loadTime
+    #setMaterialColor(root, (1,0,0,1))
     #setWireframe(root)
     show(root)
 
@@ -132,7 +136,7 @@ def draw_with_quads():
 if __name__ == "__main__":
     #draw_recursiveRawCubes()
     #draw_recursiveRawCubes_with_optimization()
-    draw_flatRawCubes()
+    #draw_flatRawCubes()
     #draw_wireframe()
     #draw_colored_cubes()
-    #draw_with_quads()
+    draw_with_quads()

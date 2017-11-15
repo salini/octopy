@@ -14,6 +14,25 @@ class Ocnode(object):
 
 
 def getOcnodeTree(node, value, parent=None, coordinate=None):
+    """ recursive operation to extract tree with 'coordinates' with corresponding value, as Octonode.
+
+    coordinates are integers that coorespond to position of the node based on parent location.
+    if one node is the fifth child of a parent, its coordinate is 4 ==> 0b100
+    this coordinate goes from 0 to 7.
+    If we consider a frame with axes X, Y, Z, (front, left, up) then:
+    coordinate | location | meaning
+    -----------------------------------------
+    0 : 000    | -X,-Y,-Z | back , right, down
+    1 : 001    |  X,-Y,-Z | front, right, down
+    2 : 010    | -X, Y,-Z | back , left , down
+    3 : 011    |  X, Y,-Z | front, left , down
+    4 : 100    | -X,-Y, Z | back , right, up
+    5 : 101    |  X,-Y, Z | front, right, up
+    6 : 110    | -X, Y, Z | back , left , up
+    7 : 111    |  X, Y, Z | front, left , up
+
+    TODO: the value should be replaced by a comparison function...
+    """
     ocnode = Ocnode(parent, coordinate)
 
     for i in range(8):
@@ -40,13 +59,22 @@ def getUnknownOcnodeTree(node):
 
 
 def getListTree(node, value):
-    """ recursive operation to extract tree with 'coordinates' with corresponding value
+    """ recursive operation to extract tree with 'coordinates' with corresponding value, as list of lists.
 
-    coordinates are integers that coorespond to the tree branches:
+    coordinates are integers that coorespond to position of the node based on parent location.
     if one node is the fifth child of a parent, its coordinate is 4 ==> 0b100
-    again if there is two levels, 3child then 4th child, coordinate is:
-    [2, 3] ==> [0b010, 0b011] ==> coord = 0b 010 011
-    etc.
+    this coordinate goes from 0 to 7.
+    If we consider a frame with axes X, Y, Z, (front, left, up) then:
+    coordinate | location | meaning
+    -----------------------------------------
+    0 : 000    | -X,-Y,-Z | back , right, down
+    1 : 001    |  X,-Y,-Z | front, right, down
+    2 : 010    | -X, Y,-Z | back , left , down
+    3 : 011    |  X, Y,-Z | front, left , down
+    4 : 100    | -X,-Y, Z | back , right, up
+    5 : 101    |  X,-Y, Z | front, right, up
+    6 : 110    | -X, Y, Z | back , left , up
+    7 : 111    |  X, Y, Z | front, left , up
 
     TODO: the value should be replaced by a comparison function...
     """
