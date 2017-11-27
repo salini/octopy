@@ -73,7 +73,10 @@ def draw_flatRawCubes():
         * draw = 67
         * gpu = 65
     """
-    inFileName = common.getFromTestDir("../resources/test.bt")
+    #inFileName = common.getFromTestDir("../resources/simple.bt")
+    #inFileName = common.getFromTestDir("../resources/test.bt")
+    inFileName = common.getFromTestDir("../resources/fr_078_tidyup.bt")
+    #inFileName = common.getFromTestDir("../resources/freiburg1_360.bt") #NOT WORKING
     octree = OctreeParser().readFile(inFileName)
     #occupied = getOccupiedListTree(octree.root)  # both can be used
     occupied = getOccupiedOcnodeTree(octree.root) # both can be used
@@ -140,7 +143,7 @@ def draw_with_quads():
 if __name__ == "__main__":
     #draw_recursiveRawCubes()
     #draw_recursiveRawCubes_with_optimization()
-    #draw_flatRawCubes()
+    draw_flatRawCubes()
     #draw_wireframe()
     #draw_colored_cubes()
-    draw_with_quads()
+    #draw_with_quads()

@@ -87,13 +87,67 @@ def parseTree(fn_action, treeRoot, dim):
 
 
 
-def createOSGTree_flatRawCubes(treeRoot, dim0):
+def createOSGTree_flatRawCubes_deprecated(treeRoot, dim0):
     print "start creating OSG tree as flat cubes"
     root = osg.Group()
     geode = osg.Geode()
     root.addChild(geode)
     fn_action = lambda pos, dim: geode.addDrawable(getBoxDrawable(pos, dim))
     parseTree(fn_action, treeRoot, dim0)
+    print "end"
+    return root
+
+
+
+_VERTEX = np.array((
+(-1,-1,-1),
+( 1,-1,-1),
+(-1, 1,-1),
+( 1, 1,-1),
+(-1,-1, 1),
+( 1,-1, 1),
+(-1, 1, 1),
+( 1, 1, 1),
+))
+
+_PRIMITIVES = (
+(0,1,5,4),
+(1,3,7,5),
+(3,2,6,7),
+(2,0,4,6),
+(0,1,3,2),
+(4,5,7,6),
+)
+def _createBoxPrimitives(pos, dim, vertArr, geom):
+    idx = vertArr.size()
+    vv = _VERTEX*dim*0.5 + pos 
+    for v in vv:
+        vertArr.push_back(osg.Vec3(*v))
+
+    for p in _PRIMITIVES:
+        primitive = osg.DrawElementsUInt(osg.PrimitiveSet.QUADS, 0)
+        for i in range(4):
+            primitive.push_back(idx + p[i])
+
+        geom.addPrimitiveSet(primitive)
+            
+            
+def createOSGTree_flatRawCubes(treeRoot, dim0):
+    print "start creating OSG tree as flat cubes"
+    root = osg.Group()
+    geode = osg.Geode()
+    root.addChild(geode)
+    geometry = osg.Geometry()
+    geode.addDrawable(geometry)
+    vertices = osg.Vec3Array()
+    geometry.setVertexArray(vertices)
+    
+    fn_action = lambda pos, dim: _createBoxPrimitives(pos, dim, vertices, geometry)
+    
+    parseTree(fn_action, treeRoot, dim0)
+    sv = osgUtil.SmoothingVisitor()
+    sv.setCreaseAngle(0.0)
+    root.accept(sv)
     print "end"
     return root
 
@@ -183,7 +237,7 @@ def createOSGTree_flatRawQuads(treeRoot, dim0):
     geode = osg.Geode()
     root.addChild(geode)
     
-    MAXVERT = 2**18
+    MAXVERT = 2**16
     INDEX = 0
     while INDEX < N:
         QUADS = quads[INDEX:INDEX+MAXVERT]
